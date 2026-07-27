@@ -16,7 +16,7 @@ Upload an image → pick how many colors you want → get back a palette sorted 
 
 - Drag-and-drop or click-to-upload image input
 - Adjustable number of extracted colors (3–10)
-- Dominant color detection using K-Means clustering
+- Dominant color detection using ColorThief
 - Palette shown as swatches with hex code + % coverage
 - Click any swatch to copy its hex code to your clipboard
 - Uploaded images are deleted immediately after processing — nothing is stored
@@ -28,7 +28,7 @@ Upload an image → pick how many colors you want → get back a palette sorted 
 | Layer | Tech |
 |---|---|
 | Backend | Python + Flask |
-| Color extraction | Pillow (image processing) + scikit-learn (K-Means clustering) + numpy |
+| Color extraction | Pillow (image processing) + ColorThief (dominant color extraction) |
 | Frontend | Plain HTML, CSS, JavaScript (no framework) |
 
 ---
@@ -91,11 +91,10 @@ pip install -r requirements.txt
 
 1. User uploads an image → sent to `/extract` via `fetch()` as `FormData`
 2. Flask saves it temporarily, then passes the file path to `extract_palette()`
-3. Pillow resizes the image and converts it into an array of RGB pixels
-4. K-Means clustering groups similar pixel colors together (e.g. 6 clusters = 6 dominant colors)
-5. Each cluster's center becomes a hex color; cluster size becomes its "% of image"
-6. The uploaded file is deleted from disk
-7. JSON response is sent back → JavaScript renders clickable swatches
+3. ColorThief extracts the dominant colors using median cut algorithm
+4. Each pixel is matched to its nearest dominant color to calculate coverage percentage
+5. The uploaded file is deleted from disk
+6. JSON response is sent back → JavaScript renders clickable swatches
 
 ---
 
