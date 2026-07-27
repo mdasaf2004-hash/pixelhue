@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixelhue - Color Palette Extractor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="gradient-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <div class="layout">
+        <header class="hero">
+            <h1>Pixelhue</h1>
+            <p class="tagline">Drop an image.<br>Discover its palette.</p>
+        </header>
+
+        <main class="workspace">
+            <div class="glass-card">
+                <div class="upload-zone" id="drop-zone">
+                    <input type="file" id="file-input" accept="image/*" hidden>
+                    <div class="upload-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </div>
+                    <p id="upload-text">Click or drag an image here</p>
+                    <img id="preview" style="display:none" />
+                </div>
+
+                <div class="controls">
+                    <label for="num-colors">Colors: <span id="num-colors-value">6</span></label>
+                    <input type="range" id="num-colors" min="3" max="10" value="6">
+                </div>
+
+                <button id="extract-btn" disabled>Extract Palette</button>
+
+                <div id="loading" style="display:none;">
+                    <div class="spinner"></div>
+                    <span>Analyzing image...</span>
+                </div>
+
+                <div id="error-msg" style="display:none;"></div>
+
+                <div id="palette-output"></div>
+
+                <div id="download-section" style="display:none;">
+                    <p class="download-label">Download palette</p>
+                    <div class="download-buttons">
+                        <button class="download-btn" data-format="txt">TXT</button>
+                        <button class="download-btn" data-format="json">JSON</button>
+                        <button class="download-btn" data-format="css">CSS</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
