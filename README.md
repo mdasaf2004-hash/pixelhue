@@ -6,6 +6,12 @@ Upload an image → pick how many colors you want → get back a palette sorted 
 
 ---
 
+## Live Demo
+
+**[pixelhue.onrender.com](https://pixelhue.onrender.com/)**
+
+---
+
 ## Features
 
 - Drag-and-drop or click-to-upload image input
