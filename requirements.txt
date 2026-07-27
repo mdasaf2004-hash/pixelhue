@@ -1,5 +1,4 @@
 Flask==3.0.3
 Pillow==12.3.0
-scikit-learn==1.5.1
-numpy==1.26.4
+colorthief==0.2.1
 gunicorn==23.0.0

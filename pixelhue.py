@@ -1,43 +1,48 @@
-from PIL import Image
-import numpy as np
-from sklearn.cluster import KMeans
+from colorthief import ColorThief
 
 
-def extract_palette(image_path, num_colors=6, resize_to=150):
+def extract_palette(image_path, num_colors=6):
 
     """
     Extracts the dominant colors from an image.
 
-
     args:
         image_path (str): The path to the image file.
         num_colors (int): The number of dominant colors to extract.
-        resize_to (int): The size to which the image will be resized for processing.
 
     returns:
-        list of dicts:[{'hex': '#RRGGBB', 'rgb': (R, G, B), 'percentage': 0.34}, ...]   
+        list of dicts:[{'hex': '#RRGGBB', 'rgb': (R, G, B), 'percentage': 0.34}, ...]
         sorted by how much of the image each color covers, descending.
 
     """
+    ct = ColorThief(image_path)
+    palette = ct.get_palette(color_count=num_colors, quality=1)
+    dominant = ct.get_color(quality=1)
+
+    total_pixels = 200 * 200
+    counts = [0] * len(palette)
+
+    from PIL import Image
     image = Image.open(image_path).convert('RGB')
-    image = image.resize((resize_to, resize_to))
-    pixels = np.array(image).reshape(-1, 3)
-    kmeans = KMeans(n_clusters=num_colors, n_init=10, random_state=42)
-    labels = kmeans.fit_predict(pixels)
-    centers = kmeans.cluster_centers_.astype(int)
-    counts = np.bincount(labels, minlength=num_colors)
-    total_count = counts.sum()
+    image = image.resize((200, 200))
+    pixels = list(image.getdata())
 
+    for pixel in pixels:
+        best_idx = 0
+        best_dist = float('inf')
+        for i, c in enumerate(palette):
+            dist = (pixel[0] - c[0]) ** 2 + (pixel[1] - c[1]) ** 2 + (pixel[2] - c[2]) ** 2
+            if dist < best_dist:
+                best_dist = dist
+                best_idx = i
+        counts[best_idx] += 1
 
-    palette = []
-    for i, center in enumerate(centers):
-        r, g, b = int(center[0]), int(center[1]), int(center[2])
+    result = []
+    for i, c in enumerate(palette):
+        r, g, b = c[0], c[1], c[2]
         hex_color = '#{:02x}{:02x}{:02x}'.format(r, g, b)
-        percentage = float(counts[i] / total_count)
-        palette.append({'hex': hex_color, 'rgb': (r, g, b), 'percentage': percentage})
+        percentage = counts[i] / total_pixels
+        result.append({'hex': hex_color, 'rgb': (r, g, b), 'percentage': percentage})
 
-    palette.sort(key=lambda x: x['percentage'], reverse=True)
-    return palette
-
-
-   
+    result.sort(key=lambda x: x['percentage'], reverse=True)
+    return result
